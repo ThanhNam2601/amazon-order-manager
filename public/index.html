@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Order Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-box"></i> Amazon Order Manager
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">
+                    <i class="fas fa-user"></i> Admin Dashboard
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Dashboard Overview Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Total Orders</h6>
+                                <h3 id="total-orders">0</h3>
+                                <small>All time</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-shopping-cart fa-2x opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Total Revenue</h6>
+                                <h3 id="total-revenue">$0.00</h3>
+                                <small>Earnings</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-dollar-sign fa-2x opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Total Costs</h6>
+                                <h3 id="total-costs">$0.00</h3>
+                                <small>FFM Costs</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-credit-card fa-2x opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Net Profit</h6>
+                                <h3 id="net-profit">$0.00</h3>
+                                <small id="profit-margin">0% margin</small>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-chart-line fa-2x opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Gmail Integration</h6>
+                                <button class="btn btn-success me-2" onclick="testGmail()">
+                                    <i class="fas fa-envelope"></i> Test Gmail
+                                </button>
+                                <button class="btn btn-primary" onclick="syncOrders()">
+                                    <i class="fas fa-sync"></i> Sync New Orders
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Data Management</h6>
+                                <button class="btn btn-info me-2" onclick="loadOrdersFromSheets()">
+                                    <i class="fas fa-download"></i> Refresh Data
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="exportData()">
+                                    <i class="fas fa-file-export"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!-- Telegram Integration -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fab fa-telegram"></i> Telegram Integration</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Bot Connection</h6>
+                        <button class="btn btn-info me-2" onclick="testTelegramBot()">
+                            <i class="fab fa-telegram"></i> Test Bot
+                        </button>
+                        <button class="btn btn-success" onclick="sendDailySummary()">
+                            <i class="fas fa-chart-bar"></i> Send Daily Summary
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Notifications</h6>
+                        <button class="btn btn-warning me-2" onclick="sendTestNotification()">
+                            <i class="fas fa-bell"></i> Test Notification
+                        </button>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="auto-notify" checked>
+                            <label class="form-check-label" for="auto-notify">
+                                Auto notify new orders
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div id="telegram-status" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Automation & Scheduling -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-clock"></i> Automation & Scheduling</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>Auto Sync</h6>
+                        <p class="small text-muted">Automatically sync new orders every 30 minutes</p>
+                        <button class="btn btn-success btn-sm me-2" onclick="startJob('autoSync')">
+                            <i class="fas fa-play"></i> Start
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="stopJob('autoSync')">
+                            <i class="fas fa-stop"></i> Stop
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Daily Summary</h6>
+                        <p class="small text-muted">Send daily report at 6 PM</p>
+                        <button class="btn btn-success btn-sm me-2" onclick="startJob('dailySummary')">
+                            <i class="fas fa-play"></i> Start
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="stopJob('dailySummary')">
+                            <i class="fas fa-stop"></i> Stop
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Manual Actions</h6>
+                        <p class="small text-muted">Run tasks manually</p>
+                        <button class="btn btn-primary btn-sm me-2" onclick="runManualSync()">
+                            <i class="fas fa-sync"></i> Manual Sync
+                        </button>
+                        <button class="btn btn-info btn-sm" onclick="checkJobStatus()">
+                            <i class="fas fa-info"></i> Status
+                        </button>
+                    </div>
+                </div>
+                <div id="scheduler-status" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Filters and Search -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-filter"></i> Filters & Search</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label">Search Orders</label>
+                                <input type="text" class="form-control" id="search-input" 
+                                       placeholder="Order ID, SKU, Item name..." 
+                                       onkeyup="filterOrders()">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" id="status-filter" onchange="filterOrders()">
+                                    <option value="">All Status</option>
+                                    <option value="new">New</option>
+                                    <option value="processing">Processing</option>
+                                    <option value="shipped">Shipped</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Date Range</label>
+                                <select class="form-select" id="date-filter" onchange="filterOrders()">
+                                    <option value="">All Time</option>
+                                    <option value="today">Today</option>
+                                    <option value="week">This Week</option>
+                                    <option value="month">This Month</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Profit Status</label>
+                                <select class="form-select" id="profit-filter" onchange="filterOrders()">
+                                    <option value="">All</option>
+                                    <option value="profitable">Profitable</option>
+                                    <option value="loss">Loss</option>
+                                    <option value="no-cost">No FFM Cost</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="d-flex">
+                                    <button class="btn btn-outline-secondary me-2" onclick="clearFilters()">
+                                        <i class="fas fa-times"></i> Clear
+                                    </button>
+                                    <button class="btn btn-primary" onclick="applyFilters()">
+                                        <i class="fas fa-search"></i> Apply
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-table"></i> Orders Management</h5>
+                        <div>
+                            <span class="badge bg-info" id="showing-count">Showing 0 orders</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Loading Spinner -->
+                        <div id="loading" class="text-center d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading orders...</p>
+                        </div>
+
+                        <!-- Orders Container -->
+                        <div id="orders-container">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-inbox fa-3x mb-3"></i>
+                                <p>Click "Refresh Data" to load orders from Google Sheets</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center py-3 mt-5">
+        <div class="container">
+            <small class="text-muted">
+                Amazon Order Management System © 2025 | 
+                <a href="#" onclick="showAbout()">About</a> | 
+                <a href="#" onclick="showHelp()">Help</a>
+            </small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
